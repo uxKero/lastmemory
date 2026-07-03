@@ -6,280 +6,192 @@
 <title>lastmemory :: memory graph</title>
 <style>
   :root {
-    --bg: #0b0e14;
-    --bg2: #0f131c;
-    --panel: #151b28;
-    --panel-border: #232c3d;
-    --text: #e6ebf4;
-    --muted: #8a96ac;
-    --faint: #5a6478;
-    --accent: #5fa8ff;
+    --bg: #0a0a0b;
+    --bg2: #0e0f12;
+    --panel: #0d0e11;
+    --panel-2: #101114;
+    --line: #1e2026;
+    --line-2: #262931;
+    --text: #ededf0;
+    --muted: #9aa1ad;
+    --faint: #5b616e;
+    --accent: #6ea8fe;
+    --radius: 12px;
   }
   * { box-sizing: border-box; }
   html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
+    margin: 0; padding: 0; width: 100%; height: 100%;
     overflow: hidden;
     background: var(--bg);
     color: var(--text);
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
   #stage {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background:
-      radial-gradient(1200px 800px at 70% 15%, #121a2a 0%, rgba(18,26,42,0) 60%),
-      radial-gradient(1000px 700px at 20% 85%, #10161f 0%, rgba(16,22,31,0) 55%),
+      radial-gradient(1100px 720px at 72% 12%, rgba(110,168,254,0.06) 0%, rgba(110,168,254,0) 60%),
+      radial-gradient(900px 700px at 15% 90%, rgba(79,209,176,0.05) 0%, rgba(79,209,176,0) 55%),
       var(--bg);
+  }
+  /* faint dotted backdrop for depth */
+  #grid {
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.028) 1px, transparent 1px);
+    background-size: 24px 24px;
+    pointer-events: none;
   }
   canvas { display: block; position: absolute; inset: 0; }
 
-  /* Title in a corner */
-  #title {
-    position: absolute;
-    top: 18px;
-    left: 20px;
-    font-size: 13px;
-    letter-spacing: 0.5px;
-    color: var(--muted);
-    user-select: none;
-    pointer-events: none;
+  .card {
+    background: color-mix(in srgb, var(--panel) 82%, transparent);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
-  #title b { color: var(--text); font-weight: 600; }
-  #title .sep { color: var(--faint); margin: 0 6px; }
 
-  /* Search (deterministic keyword finder, no network, no model) */
-  #search {
-    position: absolute;
-    top: 46px;
-    left: 20px;
-    width: 330px;
-    max-width: 88vw;
-    z-index: 5;
-    user-select: none;
+  /* Header */
+  #header {
+    position: absolute; top: 18px; left: 20px; z-index: 6;
+    display: flex; align-items: center; gap: 10px;
+    user-select: none; pointer-events: none;
   }
+  #header .brand { font-size: 14px; font-weight: 600; color: var(--text); letter-spacing: 0.2px; }
+  #header .brand .dim { color: var(--faint); font-weight: 400; margin: 0 7px; }
+  #header .brand .sub { color: var(--muted); font-weight: 400; }
+  #header .count {
+    font-size: 11px; color: var(--muted);
+    border: 1px solid var(--line); border-radius: 999px;
+    padding: 2px 9px; background: rgba(255,255,255,0.02);
+  }
+
+  /* Search */
+  #search { position: absolute; top: 52px; left: 20px; width: 340px; max-width: 86vw; z-index: 6; }
   #search .box {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(15, 19, 28, 0.82);
-    border: 1px solid var(--panel-border);
-    border-radius: 10px;
-    padding: 8px 11px;
-    backdrop-filter: blur(6px);
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 13px; border-radius: var(--radius);
+    background: color-mix(in srgb, var(--panel) 88%, transparent);
+    border: 1px solid var(--line);
+    transition: border-color 0.15s, box-shadow 0.15s;
   }
-  #search .box:focus-within { border-color: var(--accent); }
-  #search .mag { color: var(--faint); font-size: 13px; }
+  #search .box:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(110,168,254,0.12); }
+  #search .mag { color: var(--faint); font-size: 12px; letter-spacing: 0.4px; text-transform: uppercase; }
   #search input {
-    flex: 1;
-    background: none;
-    border: none;
-    outline: none;
-    color: var(--text);
-    font-size: 13px;
-    font-family: inherit;
+    flex: 1; background: none; border: none; outline: none;
+    color: var(--text); font-size: 13.5px; font-family: inherit;
   }
   #search input::placeholder { color: var(--faint); }
-  #search .clear {
-    cursor: pointer;
-    color: var(--faint);
-    border: none;
-    background: none;
-    font-size: 16px;
-    line-height: 1;
-    display: none;
-  }
+  #search .clear { display: none; cursor: pointer; border: none; background: none; color: var(--faint); font-size: 17px; line-height: 1; }
   #search .clear:hover { color: var(--text); }
   #results {
-    margin-top: 8px;
-    background: rgba(15, 19, 28, 0.92);
-    border: 1px solid var(--panel-border);
-    border-radius: 10px;
-    max-height: 62vh;
-    overflow-y: auto;
-    display: none;
-    backdrop-filter: blur(6px);
+    margin-top: 8px; display: none; overflow: hidden;
+    max-height: 60vh; overflow-y: auto;
+    border-radius: var(--radius);
+    background: color-mix(in srgb, var(--panel-2) 94%, transparent);
+    border: 1px solid var(--line);
+    box-shadow: 0 18px 50px rgba(0,0,0,0.5);
   }
   #results.open { display: block; }
+  #results::-webkit-scrollbar { width: 8px; }
+  #results::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 8px; }
   #results .s-head {
-    font-size: 11px;
-    color: var(--faint);
-    padding: 9px 12px 4px;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    position: sticky;
-    top: 0;
-    background: rgba(15, 19, 28, 0.96);
+    position: sticky; top: 0; z-index: 1;
+    font-size: 10.5px; letter-spacing: 0.7px; text-transform: uppercase;
+    color: var(--faint); padding: 11px 14px 7px;
+    background: color-mix(in srgb, var(--panel-2) 97%, transparent);
   }
-  #results .s-row {
-    padding: 8px 12px;
-    border-top: 1px solid rgba(35, 44, 61, 0.6);
-    cursor: pointer;
-  }
-  #results .s-row:hover { background: rgba(95, 168, 255, 0.08); }
-  #results .s-top { display: flex; align-items: center; gap: 7px; }
-  #results .s-dot { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; box-shadow: 0 0 6px currentColor; }
-  #results .s-id { font-size: 12.5px; color: var(--text); font-family: ui-monospace, Menlo, Consolas, monospace; word-break: break-all; }
-  #results .s-type { font-size: 10px; color: var(--faint); text-transform: uppercase; letter-spacing: 0.6px; margin-left: auto; }
-  #results .s-snip { font-size: 11.5px; color: var(--muted); line-height: 1.5; margin-top: 4px; }
-  mark { background: rgba(255, 202, 95, 0.28); color: #ffe6ad; border-radius: 2px; padding: 0 1px; }
+  #results .s-row { padding: 10px 14px; border-top: 1px solid rgba(255,255,255,0.04); cursor: pointer; transition: background 0.12s; }
+  #results .s-row:hover { background: rgba(110,168,254,0.07); }
+  #results .s-top { display: flex; align-items: center; gap: 8px; }
+  #results .s-dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; }
+  #results .s-id { font-size: 12.5px; color: var(--text); font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; word-break: break-all; }
+  #results .s-type { margin-left: auto; font-size: 10px; letter-spacing: 0.6px; text-transform: uppercase; color: var(--faint); }
+  #results .s-snip { font-size: 11.5px; color: var(--muted); line-height: 1.55; margin-top: 5px; }
+  mark { background: rgba(255,207,107,0.22); color: #ffdf9e; border-radius: 3px; padding: 0 2px; }
 
   /* Legend */
-  #legend {
-    position: absolute;
-    top: 16px;
-    right: 18px;
-    background: rgba(15, 19, 28, 0.7);
-    border: 1px solid var(--panel-border);
-    border-radius: 10px;
-    padding: 10px 12px;
-    font-size: 12px;
-    backdrop-filter: blur(6px);
-    user-select: none;
-  }
-  #legend .row { display: flex; align-items: center; gap: 8px; margin: 4px 0; color: var(--muted); }
-  #legend .dot { width: 11px; height: 11px; border-radius: 50%; box-shadow: 0 0 8px currentColor; }
-  #legend .hint { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--panel-border); color: var(--faint); font-size: 11px; line-height: 1.5; }
-  #legend .swatch { display: inline-block; width: 11px; height: 11px; border-radius: 50%; vertical-align: middle; margin-right: 4px; }
+  #legend { position: absolute; top: 18px; right: 18px; z-index: 6; padding: 12px 14px; font-size: 12px; user-select: none; }
+  #legend .lg-title { font-size: 10px; letter-spacing: 0.7px; text-transform: uppercase; color: var(--faint); margin-bottom: 8px; }
+  #legend .row { display: flex; align-items: center; gap: 9px; margin: 6px 0; color: var(--muted); }
+  #legend .dot { width: 10px; height: 10px; border-radius: 50%; }
+  #legend .hint { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); color: var(--faint); font-size: 11px; line-height: 1.6; }
+  #legend .hint .k { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--faint); margin-right: 5px; vertical-align: middle; }
+  #legend .hint .ring { display: inline-block; width: 9px; height: 9px; border-radius: 50%; border: 1px dashed var(--muted); margin-right: 5px; vertical-align: middle; }
 
-  /* Side panel */
+  /* Panel */
   #panel {
-    position: absolute;
-    top: 0;
-    right: 0;
-    height: 100%;
-    width: 340px;
-    max-width: 88vw;
-    background: linear-gradient(180deg, var(--panel) 0%, var(--bg2) 100%);
-    border-left: 1px solid var(--panel-border);
-    box-shadow: -12px 0 40px rgba(0,0,0,0.45);
-    transform: translateX(100%);
-    transition: transform 0.22s ease;
-    padding: 22px 22px 28px;
-    overflow-y: auto;
+    position: absolute; top: 0; right: 0; height: 100%; width: 360px; max-width: 90vw; z-index: 7;
+    background: linear-gradient(180deg, var(--panel-2) 0%, var(--bg2) 100%);
+    border-left: 1px solid var(--line);
+    box-shadow: -20px 0 60px rgba(0,0,0,0.5);
+    transform: translateX(100%); transition: transform 0.26s cubic-bezier(0.22,1,0.36,1);
+    padding: 26px 24px 30px; overflow-y: auto;
   }
   #panel.open { transform: translateX(0); }
-  #panel .close {
-    position: absolute;
-    top: 14px;
-    right: 16px;
-    cursor: pointer;
-    color: var(--muted);
-    font-size: 20px;
-    line-height: 1;
-    border: none;
-    background: none;
-  }
+  #panel::-webkit-scrollbar { width: 8px; }
+  #panel::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 8px; }
+  #panel .close { position: absolute; top: 18px; right: 18px; cursor: pointer; border: none; background: none; color: var(--faint); font-size: 20px; line-height: 1; }
   #panel .close:hover { color: var(--text); }
-  #panel .p-type {
-    display: inline-block;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 3px 9px;
-    border-radius: 20px;
-    font-weight: 600;
-  }
-  #panel h2 {
-    font-size: 16px;
-    margin: 14px 0 4px;
-    word-break: break-word;
-    line-height: 1.35;
-  }
+  #panel .p-type { display: inline-block; font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; padding: 4px 10px; border-radius: 999px; font-weight: 600; }
+  #panel h2 { font-size: 17px; margin: 16px 0 6px; line-height: 1.4; word-break: break-word; font-weight: 600; }
   #panel .p-id { font-size: 12px; color: var(--faint); font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; word-break: break-all; }
-  #panel .p-meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0; }
-  #panel .chip {
-    font-size: 11px;
-    color: var(--muted);
-    background: rgba(255,255,255,0.04);
-    border: 1px solid var(--panel-border);
-    border-radius: 6px;
-    padding: 3px 8px;
-  }
-  #panel .p-summary {
-    margin-top: 12px;
-    font-size: 13.5px;
-    line-height: 1.6;
-    color: #cdd6e6;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-  #panel .p-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--faint); margin-top: 18px; margin-bottom: 6px; }
+  #panel .p-meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0 4px; }
+  #panel .chip { font-size: 11px; color: var(--muted); background: rgba(255,255,255,0.03); border: 1px solid var(--line); border-radius: 7px; padding: 4px 9px; }
+  #panel .p-summary { margin-top: 14px; font-size: 13.5px; line-height: 1.65; color: #d4d9e2; white-space: pre-wrap; word-break: break-word; }
+  #panel .p-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; color: var(--faint); margin: 22px 0 8px; }
   #panel .rel {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    padding: 6px 8px;
-    margin: 4px 0;
-    border: 1px solid var(--panel-border);
-    border-radius: 7px;
-    cursor: pointer;
-    background: rgba(255,255,255,0.02);
+    display: flex; align-items: center; gap: 9px; padding: 9px 11px; margin: 5px 0;
+    border: 1px solid var(--line); border-radius: 9px; cursor: pointer;
+    background: rgba(255,255,255,0.015); transition: background 0.12s, border-color 0.12s, transform 0.12s;
   }
-  #panel .rel:hover { background: rgba(95, 168, 255, 0.1); border-color: var(--accent); }
-  #panel .rel .r-dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; box-shadow: 0 0 6px currentColor; }
-  #panel .rel .r-verb { font-size: 10.5px; color: var(--faint); text-transform: uppercase; letter-spacing: 0.5px; }
+  #panel .rel:hover { background: rgba(110,168,254,0.08); border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); transform: translateX(2px); }
+  #panel .rel .r-dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; }
+  #panel .rel .r-verb { font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--faint); }
   #panel .rel .r-id { font-size: 12px; color: var(--text); font-family: ui-monospace, Menlo, Consolas, monospace; word-break: break-all; }
-  #panel .rel .r-arrow { color: var(--faint); margin-left: auto; font-size: 13px; }
+  #panel .rel .r-arrow { margin-left: auto; color: var(--faint); font-size: 13px; }
   #panel .p-empty-rel { font-size: 12px; color: var(--faint); font-style: italic; }
 
-  /* Hover tooltip */
+  /* Tooltip */
   #tip {
-    position: absolute;
-    pointer-events: none;
-    background: rgba(9, 12, 18, 0.92);
-    border: 1px solid var(--panel-border);
-    color: var(--text);
-    font-size: 12px;
-    padding: 5px 9px;
-    border-radius: 6px;
-    white-space: nowrap;
-    transform: translate(-50%, calc(-100% - 12px));
-    opacity: 0;
-    transition: opacity 0.1s;
-    max-width: 320px;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    position: absolute; pointer-events: none; z-index: 8;
+    background: rgba(8,9,12,0.94); border: 1px solid var(--line-2); color: var(--text);
+    font-size: 12px; font-family: ui-monospace, Menlo, Consolas, monospace;
+    padding: 5px 9px; border-radius: 7px; white-space: nowrap;
+    transform: translate(-50%, calc(-100% - 12px)); opacity: 0; transition: opacity 0.1s;
+    max-width: 320px; overflow: hidden; text-overflow: ellipsis;
   }
   #tip.show { opacity: 1; }
-  #tip .t-rel { color: var(--faint); }
 
-  /* Empty state */
-  #empty {
-    position: absolute;
-    inset: 0;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 10px;
-    text-align: center;
-    padding: 20px;
+  /* Controls */
+  #controls { position: absolute; bottom: 18px; right: 18px; z-index: 6; display: flex; gap: 8px; }
+  #controls button {
+    width: 34px; height: 34px; border-radius: 9px; cursor: pointer;
+    background: color-mix(in srgb, var(--panel) 88%, transparent); border: 1px solid var(--line);
+    color: var(--muted); font-size: 15px; line-height: 1; display: flex; align-items: center; justify-content: center;
+    transition: color 0.12s, border-color 0.12s, background 0.12s;
   }
-  #empty .big { font-size: 18px; color: var(--text); }
+  #controls button:hover { color: var(--text); border-color: var(--line-2); background: rgba(255,255,255,0.03); }
+
+  #hint-bar { position: absolute; bottom: 22px; left: 20px; z-index: 6; font-size: 11px; color: var(--faint); user-select: none; pointer-events: none; }
+
+  #empty { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; flex-direction: column; gap: 12px; text-align: center; padding: 20px; }
+  #empty .big { font-size: 19px; color: var(--text); font-weight: 600; }
   #empty .sub { font-size: 13px; color: var(--muted); font-family: ui-monospace, Menlo, Consolas, monospace; }
-
-  #hint-bar {
-    position: absolute;
-    bottom: 14px;
-    left: 20px;
-    font-size: 11px;
-    color: var(--faint);
-    user-select: none;
-    pointer-events: none;
-  }
 </style>
 </head>
 <body>
 
 <div id="stage">
+  <div id="grid"></div>
   <canvas id="cv"></canvas>
 </div>
 
-<div id="title"><b>lastmemory</b><span class="sep">::</span>memory graph</div>
+<div id="header">
+  <span class="brand"><b>lastmemory</b><span class="dim">::</span><span class="sub">memory graph</span></span>
+  <span class="count" id="count"></span>
+</div>
 
 <div id="search">
   <div class="box">
@@ -290,16 +202,22 @@
   <div id="results"></div>
 </div>
 
-<div id="legend"></div>
+<div id="legend" class="card"></div>
 
 <div id="tip"></div>
+
+<div id="controls">
+  <button id="btn-fit" title="fit to view">&#9633;</button>
+  <button id="btn-in" title="zoom in">+</button>
+  <button id="btn-out" title="zoom out">&minus;</button>
+</div>
+
+<div id="hint-bar">drag to move, scroll to zoom, click a node for details and links</div>
 
 <div id="empty">
   <div class="big">No memory yet.</div>
   <div class="sub">Run /lastmemory to start.</div>
 </div>
-
-<div id="hint-bar">search by keyword, drag to move, scroll to zoom, click a node for details and links</div>
 
 <div id="panel">
   <button class="close" id="panel-close" aria-label="close">&times;</button>
@@ -319,28 +237,19 @@
   // ----- Data injection contract (Python replaces the token below) -----
   const GRAPH = /*__GRAPH_DATA__*/ {"nodes":[],"links":[]};
 
-  // ----- Type colors (one distinct, pleasant color per neuron type) -----
+  // ----- Type colors (muted, harmonized, one per neuron type) -----
   const TYPE_COLORS = {
-    session:    "#5fa8ff", // blue
-    zone:       "#3fd6a8", // teal green
-    decision:   "#c58bff", // violet
-    scar:       "#ff6b81", // warm red
-    reflection: "#ffca5f", // amber
-    unknown:    "#8a96ac"  // gray fallback
+    session:    "#6ea8fe",
+    zone:       "#4fd1b0",
+    decision:   "#b98cff",
+    scar:       "#ff7a8a",
+    reflection: "#ffcf6b",
+    unknown:    "#8891a0"
   };
-  const TYPE_LABELS = {
-    session: "session",
-    zone: "zone",
-    decision: "decision",
-    scar: "scar",
-    reflection: "reflection"
-  };
+  const TYPE_LABELS = { session: "session", zone: "zone", decision: "decision", scar: "scar", reflection: "reflection" };
 
   // ----- Helpers -----
-  function num(v, dflt) {
-    var n = typeof v === "number" ? v : parseFloat(v);
-    return isFinite(n) ? n : dflt;
-  }
+  function num(v, dflt) { var n = typeof v === "number" ? v : parseFloat(v); return isFinite(n) ? n : dflt; }
   function clamp(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
   function colorFor(type) { return TYPE_COLORS[type] || TYPE_COLORS.unknown; }
   function hexToRgb(hex) {
@@ -348,50 +257,36 @@
     if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
     return { r: parseInt(h.substr(0,2),16), g: parseInt(h.substr(2,2),16), b: parseInt(h.substr(4,2),16) };
   }
-  function mix(a, b, t) {
-    return { r: Math.round(a.r + (b.r - a.r)*t), g: Math.round(a.g + (b.g - a.g)*t), b: Math.round(a.b + (b.b - a.b)*t) };
-  }
-  function rgba(c, alpha) { return "rgba(" + c.r + "," + c.g + "," + c.b + "," + alpha + ")"; }
-  function firstLine(s) {
-    var idx = s.indexOf("\n");
-    return idx >= 0 ? s.slice(0, idx) : s;
-  }
+  function mix(a, b, t) { return { r: Math.round(a.r+(b.r-a.r)*t), g: Math.round(a.g+(b.g-a.g)*t), b: Math.round(a.b+(b.b-a.b)*t) }; }
+  function rgba(c, a) { return "rgba(" + c.r + "," + c.g + "," + c.b + "," + a + ")"; }
+  function firstLine(s) { var i = s.indexOf("\n"); return i >= 0 ? s.slice(0, i) : s; }
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
   }
   function escapeRegex(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
-  function countOcc(hay, tok) {
-    if (!tok) return 0;
-    return hay.split(tok).length - 1;
-  }
+  function countOcc(hay, tok) { return tok ? hay.split(tok).length - 1 : 0; }
+  function ease(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2; }
 
-  // ----- Canvas setup -----
+  // ----- Canvas -----
   var canvas = document.getElementById("cv");
   var ctx = canvas.getContext("2d");
   var DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
   var W = 0, H = 0;
-
   function resize() {
-    W = window.innerWidth;
-    H = window.innerHeight;
-    canvas.width = Math.floor(W * DPR);
-    canvas.height = Math.floor(H * DPR);
-    canvas.style.width = W + "px";
-    canvas.style.height = H + "px";
+    W = window.innerWidth; H = window.innerHeight;
+    canvas.width = Math.floor(W * DPR); canvas.height = Math.floor(H * DPR);
+    canvas.style.width = W + "px"; canvas.style.height = H + "px";
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
   }
   window.addEventListener("resize", resize);
   resize();
 
-  // ----- Build node and link model -----
+  // ----- Model -----
   var rawNodes = Array.isArray(GRAPH.nodes) ? GRAPH.nodes : [];
   var rawLinks = Array.isArray(GRAPH.links) ? GRAPH.links : [];
-
-  var nodes = [];
-  var nodeById = {};
-  var i, n;
+  var nodes = [], nodeById = {}, i, n;
 
   for (i = 0; i < rawNodes.length; i++) {
     var s = rawNodes[i] || {};
@@ -402,52 +297,37 @@
     var text = s.text != null ? String(s.text) : "";
     var summary = s.summary != null ? String(s.summary) : "";
     n = {
-      id: id,
-      type: type,
-      summary: summary,
-      zone: zone,
-      tags: tags,
-      text: text,
+      id: id, type: type, summary: summary, zone: zone, tags: tags, text: text,
       importance: clamp(num(s.importance, 5), 0, 10),
       temperature: clamp(num(s.temperature, 0.5), 0, 1),
       status: s.status || "active",
-      degree: num(s.degree, 0),
-      orphan: s.orphan === true,
-      // searchable haystacks (strong = index level fields, full = plus body)
+      degree: num(s.degree, 0), orphan: s.orphan === true,
       _strong: (id + " " + type + " " + zone + " " + tags.join(" ") + " " + summary).toLowerCase(),
       _full: (id + " " + type + " " + zone + " " + tags.join(" ") + " " + summary + " " + text).toLowerCase(),
-      // physics
-      x: W/2 + (Math.random() - 0.5) * Math.min(W, 600),
-      y: H/2 + (Math.random() - 0.5) * Math.min(H, 600),
-      vx: 0, vy: 0,
-      linkCount: 0,
-      out: [],
-      inc: []
+      x: W/2 + (Math.random()-0.5) * Math.min(W, 620),
+      y: H/2 + (Math.random()-0.5) * Math.min(H, 620),
+      vx: 0, vy: 0, linkCount: 0, out: [], inc: []
     };
-    if (!nodeById[id]) {
-      nodes.push(n);
-      nodeById[id] = n;
-    }
+    if (!nodeById[id]) { nodes.push(n); nodeById[id] = n; }
   }
 
   var links = [];
   for (i = 0; i < rawLinks.length; i++) {
     var l = rawLinks[i] || {};
-    var srcId = l.source != null ? String(l.source) : null;
-    var tgtId = l.target != null ? String(l.target) : null;
-    var a = srcId != null ? nodeById[srcId] : null;
-    var b = tgtId != null ? nodeById[tgtId] : null;
+    var a = l.source != null ? nodeById[String(l.source)] : null;
+    var b = l.target != null ? nodeById[String(l.target)] : null;
     if (a && b && a !== b) {
       var rel = l.relation != null ? String(l.relation) : "";
       links.push({ source: a, target: b, relation: rel });
-      a.linkCount++;
-      b.linkCount++;
+      a.linkCount++; b.linkCount++;
       a.out.push({ relation: rel, other: b });
       b.inc.push({ relation: rel, other: a });
     }
   }
 
-  // Effective degree: prefer provided degree, fall back to counted links.
+  function computeRadius(node) {
+    return clamp(5.5 + Math.sqrt(node.deg) * 3.4 + (node.importance / 10) * 3.2, 5, 32);
+  }
   for (i = 0; i < nodes.length; i++) {
     n = nodes[i];
     n.deg = n.degree > 0 ? n.degree : n.linkCount;
@@ -455,367 +335,308 @@
     n.radius = computeRadius(n);
   }
 
-  function computeRadius(node) {
-    // Scale with degree, with importance as a gentle secondary factor.
-    var base = 5.5;
-    var byDeg = Math.sqrt(node.deg) * 3.2;
-    var byImp = (node.importance / 10) * 3.0;
-    return clamp(base + byDeg + byImp, 5, 30);
-  }
+  document.getElementById("count").textContent = nodes.length + (nodes.length === 1 ? " neuron" : " neurons");
 
-  // ----- Empty state -----
-  if (nodes.length === 0) {
+  var empty = nodes.length === 0;
+  if (empty) {
     document.getElementById("empty").style.display = "flex";
     document.getElementById("legend").style.display = "none";
     document.getElementById("hint-bar").style.display = "none";
     document.getElementById("search").style.display = "none";
+    document.getElementById("controls").style.display = "none";
+    document.getElementById("count").style.display = "none";
   }
 
-  // ----- Legend (only for types actually present) -----
+  // ----- Legend -----
   (function buildLegend() {
     var legend = document.getElementById("legend");
     var present = {};
-    for (var k = 0; k < nodes.length; k++) {
-      if (TYPE_LABELS[nodes[k].type]) present[nodes[k].type] = true;
-    }
+    for (var k = 0; k < nodes.length; k++) if (TYPE_LABELS[nodes[k].type]) present[nodes[k].type] = true;
     var order = ["session", "zone", "decision", "scar", "reflection"];
-    var html = "";
+    var html = '<div class="lg-title">neuron types</div>';
     for (var j = 0; j < order.length; j++) {
       var t = order[j];
       if (!present[t]) continue;
-      html += '<div class="row"><span class="dot" style="background:' + TYPE_COLORS[t] + ';color:' + TYPE_COLORS[t] + '"></span>' + TYPE_LABELS[t] + '</div>';
+      html += '<div class="row"><span class="dot" style="background:' + TYPE_COLORS[t] + '"></span>' + TYPE_LABELS[t] + '</div>';
     }
-    html += '<div class="hint">size: connections<br>brightness: temperature<br><span class="swatch" style="background:#5a6478"></span>gray: superseded<br>dashed ring: orphan</div>';
+    html += '<div class="hint">size is connections<br>brightness is temperature<br><span class="k"></span>gray is superseded<br><span class="ring"></span>dashed is orphan</div>';
     legend.innerHTML = html;
   })();
 
-  // ----- Camera (pan and zoom) -----
+  // ----- Camera -----
   var cam = { x: 0, y: 0, scale: 1 };
+  var camAnim = null;
+  function worldToScreen(wx, wy) { return { x: (wx - W/2) * cam.scale + W/2 + cam.x, y: (wy - H/2) * cam.scale + H/2 + cam.y }; }
+  function screenToWorld(sx, sy) { return { x: (sx - W/2 - cam.x) / cam.scale + W/2, y: (sy - H/2 - cam.y) / cam.scale + H/2 }; }
+  function animateCamTo(x, y, scale, dur) { camAnim = { x0: cam.x, y0: cam.y, s0: cam.scale, x1: x, y1: y, s1: scale, t: 0, dur: dur || 460 }; }
+  function stopCamAnim() { camAnim = null; }
 
-  function worldToScreen(wx, wy) {
-    return { x: (wx - W/2) * cam.scale + W/2 + cam.x, y: (wy - H/2) * cam.scale + H/2 + cam.y };
+  // Fit all nodes into view. offsetRight leaves room for the open panel.
+  function computeFit(instant, offsetRight) {
+    if (nodes.length === 0) return;
+    var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (var k = 0; k < nodes.length; k++) {
+      var nd = nodes[k];
+      minX = Math.min(minX, nd.x); maxX = Math.max(maxX, nd.x);
+      minY = Math.min(minY, nd.y); maxY = Math.max(maxY, nd.y);
+    }
+    var pad = 90;
+    var availW = (W - (offsetRight || 0)) - pad * 2;
+    var availH = H - pad * 2;
+    var gw = Math.max(1, maxX - minX), gh = Math.max(1, maxY - minY);
+    var scale = clamp(Math.min(availW / gw, availH / gh), 0.25, 1.8);
+    var cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
+    var targetSx = (W - (offsetRight || 0)) / 2;
+    var nx = targetSx - W/2 - (cx - W/2) * scale;
+    var ny = 0 - (cy - H/2) * scale;
+    if (instant) { cam.scale = scale; cam.x = nx; cam.y = ny; stopCamAnim(); }
+    else { animateCamTo(nx, ny, scale, 520); }
   }
-  function screenToWorld(sx, sy) {
-    return { x: (sx - W/2 - cam.x) / cam.scale + W/2, y: (sy - H/2 - cam.y) / cam.scale + H/2 };
-  }
 
-  // ----- Force simulation (tiny custom solver) -----
-  var REPULSION = 5200;
-  var SPRING = 0.012;
-  var SPRING_LEN = 78;
-  var CENTER_PULL = 0.006;
-  var DAMPING = 0.86;
-  var MAX_V = 24;
-
+  // ----- Physics -----
+  var REPULSION = 6000, SPRING = 0.013, SPRING_LEN = 82, CENTER_PULL = 0.006, DAMPING = 0.86, MAX_V = 26;
+  var dragNode = null;
   function step(iterations) {
     var it, a, b, dx, dy, dist, force, i2, j2, na, nb;
     for (it = 0; it < iterations; it++) {
       for (i2 = 0; i2 < nodes.length; i2++) {
-        na = nodes[i2];
-        if (na === dragNode) continue;
+        na = nodes[i2]; if (na === dragNode) continue;
         for (j2 = i2 + 1; j2 < nodes.length; j2++) {
           nb = nodes[j2];
-          dx = na.x - nb.x;
-          dy = na.y - nb.y;
+          dx = na.x - nb.x; dy = na.y - nb.y;
           var d2 = dx*dx + dy*dy;
           if (d2 < 0.01) { dx = (Math.random()-0.5); dy = (Math.random()-0.5); d2 = 0.01; }
-          dist = Math.sqrt(d2);
-          force = REPULSION / d2;
+          dist = Math.sqrt(d2); force = REPULSION / d2;
           var ux = dx / dist, uy = dy / dist;
-          na.vx += ux * force;
-          na.vy += uy * force;
-          if (nb !== dragNode) {
-            nb.vx -= ux * force;
-            nb.vy -= uy * force;
-          }
+          na.vx += ux * force; na.vy += uy * force;
+          if (nb !== dragNode) { nb.vx -= ux * force; nb.vy -= uy * force; }
         }
       }
       for (i2 = 0; i2 < links.length; i2++) {
-        a = links[i2].source;
-        b = links[i2].target;
-        dx = b.x - a.x;
-        dy = b.y - a.y;
+        a = links[i2].source; b = links[i2].target;
+        dx = b.x - a.x; dy = b.y - a.y;
         dist = Math.sqrt(dx*dx + dy*dy) || 0.01;
         force = (dist - SPRING_LEN) * SPRING;
-        var lx = dx / dist * force, ly = dy / dist * force;
+        var lx = dx/dist*force, ly = dy/dist*force;
         if (a !== dragNode) { a.vx += lx; a.vy += ly; }
         if (b !== dragNode) { b.vx -= lx; b.vy -= ly; }
       }
       for (i2 = 0; i2 < nodes.length; i2++) {
-        na = nodes[i2];
-        if (na === dragNode) continue;
-        na.vx += (W/2 - na.x) * CENTER_PULL;
-        na.vy += (H/2 - na.y) * CENTER_PULL;
+        na = nodes[i2]; if (na === dragNode) continue;
+        na.vx += (W/2 - na.x) * CENTER_PULL; na.vy += (H/2 - na.y) * CENTER_PULL;
       }
       for (i2 = 0; i2 < nodes.length; i2++) {
-        na = nodes[i2];
-        if (na === dragNode) continue;
-        na.vx *= DAMPING;
-        na.vy *= DAMPING;
-        na.vx = clamp(na.vx, -MAX_V, MAX_V);
-        na.vy = clamp(na.vy, -MAX_V, MAX_V);
-        na.x += na.vx;
-        na.y += na.vy;
+        na = nodes[i2]; if (na === dragNode) continue;
+        na.vx *= DAMPING; na.vy *= DAMPING;
+        na.vx = clamp(na.vx, -MAX_V, MAX_V); na.vy = clamp(na.vy, -MAX_V, MAX_V);
+        na.x += na.vx; na.y += na.vy;
       }
     }
   }
 
-  var energy = 1.0;
+  // Warm up the layout off screen, then frame it, for a calm first paint.
+  if (!empty) { step(320); computeFit(true, 0); }
+  var energy = 0.35;
 
   // ----- Rendering -----
-  var hoverNode = null;
-  var selectedNode = null;
+  var hoverNode = null, selectedNode = null;
+  var GRAY = hexToRgb("#5b616e");
+  var DIM = { r: 16, g: 18, b: 22 };
+
+  function isMuted(node) { return node.status === "superseded" || node.status === "deprecated"; }
 
   function draw() {
     ctx.clearRect(0, 0, W, H);
+    // edges
     for (var i3 = 0; i3 < links.length; i3++) {
       var lk = links[i3];
       var pa = worldToScreen(lk.source.x, lk.source.y);
       var pb = worldToScreen(lk.target.x, lk.target.y);
+      var connected = selectedNode && (lk.source === selectedNode || lk.target === selectedNode);
       var muted = isMuted(lk.source) || isMuted(lk.target);
-      var relColor = relationColor(lk.relation);
-      var highlighted = selectedNode && (lk.source === selectedNode || lk.target === selectedNode);
-      var alpha = muted ? 0.10 : (highlighted ? 0.55 : 0.18);
-      ctx.strokeStyle = muted ? "rgba(120,130,150," + alpha + ")" : rgba(relColor, alpha);
-      ctx.lineWidth = highlighted ? 1.6 : 0.9;
-      ctx.beginPath();
-      ctx.moveTo(pa.x, pa.y);
-      ctx.lineTo(pb.x, pb.y);
-      ctx.stroke();
+      if (connected) {
+        var c = hexToRgb(colorFor(selectedNode.type));
+        ctx.strokeStyle = rgba(c, 0.5); ctx.lineWidth = 1.5;
+      } else {
+        ctx.strokeStyle = rgba(GRAY, muted ? 0.06 : 0.13); ctx.lineWidth = 0.9;
+      }
+      ctx.beginPath(); ctx.moveTo(pa.x, pa.y); ctx.lineTo(pb.x, pb.y); ctx.stroke();
     }
-    for (var i4 = 0; i4 < nodes.length; i4++) {
-      drawNode(nodes[i4]);
-    }
-  }
-
-  function isMuted(node) {
-    return node.status === "superseded" || node.status === "deprecated";
-  }
-
-  var GRAY = hexToRgb("#5a6478");
-
-  function relationColor(rel) {
-    if (!rel) return hexToRgb("#3d4a63");
-    var h = 0;
-    for (var i5 = 0; i5 < rel.length; i5++) h = (h * 31 + rel.charCodeAt(i5)) & 0xffff;
-    var palette = ["#6f7fa8", "#4f8f8a", "#8a6fa8", "#a88a6f", "#6fa877", "#a86f8a"];
-    return hexToRgb(palette[h % palette.length]);
+    // nodes
+    for (var i4 = 0; i4 < nodes.length; i4++) drawNode(nodes[i4]);
+    // labels on top
+    for (var i5 = 0; i5 < nodes.length; i5++) drawLabel(nodes[i5]);
   }
 
   function drawNode(node) {
     var p = worldToScreen(node.x, node.y);
     node._sx = p.x; node._sy = p.y;
-    var r = node.radius * cam.scale;
-    node._sr = r;
-
+    var r = node.radius * cam.scale; node._sr = r;
     var muted = isMuted(node);
-    var baseColor = muted ? GRAY : hexToRgb(colorFor(node.type));
+    var base = muted ? GRAY : hexToRgb(colorFor(node.type));
+    var bright = mix(DIM, base, clamp(0.32 + node.temperature * 0.68, 0.32, 1));
+    var isSel = node === selectedNode, isHov = node === hoverNode;
 
-    var temp = node.temperature;
-    var bright = mix({ r: 20, g: 24, b: 34 }, baseColor, clamp(0.28 + temp * 0.72, 0.28, 1));
-
-    var isSel = node === selectedNode;
-    var isHov = node === hoverNode;
-
-    var glow = clamp(temp, 0, 1) * 14 * cam.scale;
-    if (isHov || isSel) glow = Math.max(glow, 16 * cam.scale);
+    var glow = clamp(node.temperature, 0, 1) * 12 * cam.scale;
+    if (isHov || isSel) glow = Math.max(glow, 18 * cam.scale);
     if (glow > 0.5 && !muted) {
       ctx.save();
-      ctx.shadowColor = rgba(baseColor, 0.9);
-      ctx.shadowBlur = glow;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-      ctx.fillStyle = rgba(bright, 1);
-      ctx.fill();
+      ctx.shadowColor = rgba(base, 0.85); ctx.shadowBlur = glow;
+      ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI*2);
+      ctx.fillStyle = rgba(bright, 1); ctx.fill();
       ctx.restore();
     } else {
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
-      ctx.fillStyle = rgba(bright, muted ? 0.7 : 1);
-      ctx.fill();
+      ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI*2);
+      ctx.fillStyle = rgba(bright, muted ? 0.7 : 1); ctx.fill();
     }
+    // subtle inner rim for definition
+    ctx.lineWidth = 1; ctx.strokeStyle = rgba(mix(base, {r:255,g:255,b:255}, 0.25), 0.35);
+    ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI*2); ctx.stroke();
 
     if (node.isOrphan) {
-      ctx.save();
-      ctx.setLineDash([3, 3]);
-      ctx.lineWidth = 1.3;
-      ctx.strokeStyle = rgba(muted ? GRAY : baseColor, 0.9);
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, r + 3.5, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.restore();
+      ctx.save(); ctx.setLineDash([3, 3]); ctx.lineWidth = 1.2;
+      ctx.strokeStyle = rgba(muted ? GRAY : base, 0.85);
+      ctx.beginPath(); ctx.arc(p.x, p.y, r + 4, 0, Math.PI*2); ctx.stroke(); ctx.restore();
     }
-
     if (isSel) {
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = "rgba(255,255,255,0.85)";
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, r + 5, 0, Math.PI * 2);
-      ctx.stroke();
+      ctx.lineWidth = 2; ctx.strokeStyle = "rgba(255,255,255,0.9)";
+      ctx.beginPath(); ctx.arc(p.x, p.y, r + 6, 0, Math.PI*2); ctx.stroke();
     } else if (isHov) {
-      ctx.lineWidth = 1.4;
-      ctx.strokeStyle = "rgba(255,255,255,0.5)";
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, r + 4, 0, Math.PI * 2);
-      ctx.stroke();
+      ctx.lineWidth = 1.4; ctx.strokeStyle = "rgba(255,255,255,0.55)";
+      ctx.beginPath(); ctx.arc(p.x, p.y, r + 5, 0, Math.PI*2); ctx.stroke();
     }
   }
 
-  // ----- Animation loop -----
+  function drawLabel(node) {
+    var isSel = node === selectedNode, isHov = node === hoverNode;
+    var structural = node.type === "zone" || node.type === "reflection";
+    var show = isSel || isHov || structural || cam.scale > 1.3;
+    if (!show) return;
+    var p = { x: node._sx, y: node._sy };
+    var r = node._sr;
+    var label = node.id;
+    ctx.font = (isSel || isHov ? "600 " : "") + "11px ui-sans-serif, system-ui, sans-serif";
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    ctx.save();
+    ctx.shadowColor = "rgba(0,0,0,0.85)"; ctx.shadowBlur = 4;
+    ctx.fillStyle = isSel || isHov ? "rgba(237,237,240,0.98)" : "rgba(154,161,173,0.85)";
+    ctx.fillText(label, p.x, p.y + r + 5);
+    ctx.restore();
+  }
+
   function frame() {
-    var iters = energy > 0.05 ? 6 : 1;
-    step(iters);
-    energy *= 0.985;
-    if (energy < 0.03) energy = 0.03;
+    if (camAnim) {
+      camAnim.t += 16;
+      var k = Math.min(1, camAnim.t / camAnim.dur), e = ease(k);
+      cam.x = camAnim.x0 + (camAnim.x1 - camAnim.x0) * e;
+      cam.y = camAnim.y0 + (camAnim.y1 - camAnim.y0) * e;
+      cam.scale = camAnim.s0 + (camAnim.s1 - camAnim.s0) * e;
+      if (k >= 1) camAnim = null;
+    }
+    step(energy > 0.05 ? 4 : 1);
+    energy *= 0.99; if (energy < 0.02) energy = 0.02;
     draw();
     requestAnimationFrame(frame);
   }
-  if (nodes.length > 0) requestAnimationFrame(frame);
+  if (!empty) requestAnimationFrame(frame);
 
   // ----- Picking -----
   function nodeAt(sx, sy) {
     for (var i6 = nodes.length - 1; i6 >= 0; i6--) {
       var nd = nodes[i6];
-      var dx = sx - nd._sx, dy = sy - nd._sy;
-      var rr = (nd._sr || 6) + 4;
+      var dx = sx - nd._sx, dy = sy - nd._sy, rr = (nd._sr || 6) + 5;
       if (dx*dx + dy*dy <= rr*rr) return nd;
     }
     return null;
   }
 
-  // ----- Interaction: drag nodes, pan background, zoom -----
-  var dragNode = null;
-  var dragging = false;
-  var panning = false;
-  var lastX = 0, lastY = 0;
-  var pressX = 0, pressY = 0;
-  var movedSincePress = false;
-
+  // ----- Interaction -----
+  var dragging = false, panning = false, lastX = 0, lastY = 0, pressX = 0, pressY = 0, moved = false;
   function getPos(e) {
     var rect = canvas.getBoundingClientRect();
     var t = e.touches && e.touches[0];
-    var cx = t ? t.clientX : e.clientX;
-    var cy = t ? t.clientY : e.clientY;
-    return { x: cx - rect.left, y: cy - rect.top };
+    return { x: (t ? t.clientX : e.clientX) - rect.left, y: (t ? t.clientY : e.clientY) - rect.top };
   }
-
   function onDown(e) {
-    var p = getPos(e);
-    lastX = p.x; lastY = p.y;
-    pressX = p.x; pressY = p.y;
-    movedSincePress = false;
+    var p = getPos(e); lastX = p.x; lastY = p.y; pressX = p.x; pressY = p.y; moved = false;
+    stopCamAnim();
     var hit = nodeAt(p.x, p.y);
-    if (hit) {
-      dragNode = hit;
-      dragging = true;
-      energy = Math.max(energy, 0.35);
-    } else {
-      panning = true;
-    }
+    if (hit) { dragNode = hit; dragging = true; energy = Math.max(energy, 0.4); }
+    else { panning = true; }
   }
-
   function onMove(e) {
     var p = getPos(e);
-    if (Math.abs(p.x - pressX) > 3 || Math.abs(p.y - pressY) > 3) movedSincePress = true;
-
+    if (Math.abs(p.x - pressX) > 3 || Math.abs(p.y - pressY) > 3) moved = true;
     if (dragging && dragNode) {
-      var w = screenToWorld(p.x, p.y);
-      dragNode.x = w.x;
-      dragNode.y = w.y;
-      dragNode.vx = 0;
-      dragNode.vy = 0;
-      energy = Math.max(energy, 0.25);
+      var w = screenToWorld(p.x, p.y); dragNode.x = w.x; dragNode.y = w.y; dragNode.vx = 0; dragNode.vy = 0;
+      energy = Math.max(energy, 0.3);
     } else if (panning) {
-      cam.x += (p.x - lastX);
-      cam.y += (p.y - lastY);
+      cam.x += (p.x - lastX); cam.y += (p.y - lastY);
     } else {
-      var hit = nodeAt(p.x, p.y);
-      hoverNode = hit;
-      updateTip(hit, p.x, p.y);
+      var hit = nodeAt(p.x, p.y); hoverNode = hit; updateTip(hit, p.x, p.y);
       canvas.style.cursor = hit ? "pointer" : "grab";
     }
     lastX = p.x; lastY = p.y;
   }
-
-  function onUp(e) {
-    if (dragging && dragNode && !movedSincePress) {
-      selectNode(dragNode);
-    } else if (panning && !movedSincePress) {
-      selectNode(null);
-    }
-    dragging = false;
-    panning = false;
-    dragNode = null;
+  function onUp() {
+    if (dragging && dragNode && !moved) selectNode(dragNode);
+    else if (panning && !moved) selectNode(null);
+    dragging = false; panning = false; dragNode = null;
   }
-
   canvas.addEventListener("mousedown", onDown);
   window.addEventListener("mousemove", onMove);
   window.addEventListener("mouseup", onUp);
-
   canvas.addEventListener("touchstart", function (e) { onDown(e); e.preventDefault(); }, { passive: false });
   canvas.addEventListener("touchmove", function (e) { onMove(e); e.preventDefault(); }, { passive: false });
-  canvas.addEventListener("touchend", function (e) { onUp(e); }, { passive: false });
+  canvas.addEventListener("touchend", function () { onUp(); }, { passive: false });
 
-  canvas.addEventListener("wheel", function (e) {
-    e.preventDefault();
-    var p = getPos(e);
-    var before = screenToWorld(p.x, p.y);
-    var factor = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+  function zoomAt(sx, sy, factor) {
+    stopCamAnim();
+    var before = screenToWorld(sx, sy);
     cam.scale = clamp(cam.scale * factor, 0.2, 5);
-    var after = screenToWorld(p.x, p.y);
-    cam.x += (after.x - before.x) * cam.scale;
-    cam.y += (after.y - before.y) * cam.scale;
+    var after = screenToWorld(sx, sy);
+    cam.x += (after.x - before.x) * cam.scale; cam.y += (after.y - before.y) * cam.scale;
+  }
+  canvas.addEventListener("wheel", function (e) {
+    e.preventDefault(); var p = getPos(e);
+    zoomAt(p.x, p.y, e.deltaY < 0 ? 1.12 : 1/1.12);
   }, { passive: false });
 
-  // ----- Tooltip (hover shows the node id) -----
+  document.getElementById("btn-in").addEventListener("click", function () { zoomAt(W/2, H/2, 1.25); });
+  document.getElementById("btn-out").addEventListener("click", function () { zoomAt(W/2, H/2, 1/1.25); });
+  document.getElementById("btn-fit").addEventListener("click", function () { computeFit(false, panelOpen ? 360 : 0); });
+
+  // ----- Tooltip -----
   var tip = document.getElementById("tip");
   function updateTip(node, sx, sy) {
     if (!node) { tip.classList.remove("show"); return; }
-    tip.textContent = node.id;
-    tip.style.left = sx + "px";
-    tip.style.top = sy + "px";
-    tip.classList.add("show");
+    tip.textContent = node.id; tip.style.left = sx + "px"; tip.style.top = sy + "px"; tip.classList.add("show");
   }
 
-  // ----- Navigate: center the camera on a node and select it -----
+  // ----- Navigate -----
   function focusNode(node) {
     if (!node) return;
-    var scale = clamp(Math.max(cam.scale, 1.15), 0.2, 5);
-    cam.scale = scale;
-    // Aim for the center of the visible area left of the panel when it is open.
-    var targetSx = (W > 720) ? (W - 340) / 2 : W / 2;
-    var targetSy = H / 2;
-    cam.x = targetSx - W/2 - (node.x - W/2) * scale;
-    cam.y = targetSy - H/2 - (node.y - H/2) * scale;
-    energy = Math.max(energy, 0.12);
+    var scale = clamp(Math.max(cam.scale, 1.2), 0.2, 5);
+    var targetSx = (W > 780) ? (W - 360) / 2 : W / 2, targetSy = H / 2;
+    animateCamTo(targetSx - W/2 - (node.x - W/2) * scale, targetSy - H/2 - (node.y - H/2) * scale, scale, 460);
   }
-  function navigate(node) {
-    if (!node) return;
-    selectNode(node);
-    focusNode(node);
-  }
+  function navigate(node) { if (!node) return; selectNode(node); focusNode(node); }
 
-  // ----- Side panel (click a node) -----
+  // ----- Panel -----
+  var panelOpen = false;
   var panel = document.getElementById("panel");
-  var pType = document.getElementById("p-type");
-  var pTitle = document.getElementById("p-title");
-  var pId = document.getElementById("p-id");
-  var pMeta = document.getElementById("p-meta");
-  var pSummary = document.getElementById("p-summary");
-  var pRels = document.getElementById("p-rels");
+  var pType = document.getElementById("p-type"), pTitle = document.getElementById("p-title");
+  var pId = document.getElementById("p-id"), pMeta = document.getElementById("p-meta");
+  var pSummary = document.getElementById("p-summary"), pRels = document.getElementById("p-rels");
 
   function selectNode(node) {
     selectedNode = node;
-    if (!node) { panel.classList.remove("open"); return; }
-    var col = isMuted(node) ? "#8a96ac" : colorFor(node.type);
-    var typeName = TYPE_LABELS[node.type] || node.type || "unknown";
-    pType.textContent = typeName;
-    pType.style.background = "rgba(255,255,255,0.06)";
-    pType.style.color = col;
-    pType.style.border = "1px solid " + col;
+    if (!node) { panel.classList.remove("open"); panelOpen = false; return; }
+    var col = isMuted(node) ? "#9aa1ad" : colorFor(node.type);
+    pType.textContent = TYPE_LABELS[node.type] || node.type || "unknown";
+    pType.style.color = col; pType.style.background = "rgba(255,255,255,0.05)"; pType.style.border = "1px solid " + col;
     pTitle.textContent = node.summary ? firstLine(node.summary) : node.id;
     pId.textContent = node.id;
-
     var chips = [];
     if (node.zone) chips.push(chip("zone " + node.zone));
     chips.push(chip("importance " + Math.round(node.importance)));
@@ -824,174 +645,105 @@
     if (node.status && node.status !== "active") chips.push(chip(node.status));
     if (node.isOrphan) chips.push(chip("orphan"));
     pMeta.innerHTML = chips.join("");
-
     pSummary.textContent = node.summary || "(no summary recorded)";
-
-    // Relations: real, clickable links into the network.
     pRels.innerHTML = renderRelations(node);
-    panel.classList.add("open");
+    panel.classList.add("open"); panelOpen = true;
   }
-
   function renderRelations(node) {
     var html = "";
-    if (node.out.length) {
-      html += '<div class="p-label">Links out</div>';
-      html += node.out.map(function (r) { return relRow(r.relation, r.other, "out"); }).join("");
-    }
-    if (node.inc.length) {
-      html += '<div class="p-label">Linked from</div>';
-      html += node.inc.map(function (r) { return relRow(r.relation, r.other, "in"); }).join("");
-    }
-    if (!node.out.length && !node.inc.length) {
-      html += '<div class="p-label">Links</div><div class="p-empty-rel">no connections. this neuron is an orphan.</div>';
-    }
+    if (node.out.length) { html += '<div class="p-label">Links out</div>'; html += node.out.map(function (r) { return relRow(r.relation, r.other, "out"); }).join(""); }
+    if (node.inc.length) { html += '<div class="p-label">Linked from</div>'; html += node.inc.map(function (r) { return relRow(r.relation, r.other, "in"); }).join(""); }
+    if (!node.out.length && !node.inc.length) html += '<div class="p-label">Links</div><div class="p-empty-rel">no connections. this neuron is an orphan.</div>';
     return html;
   }
-
   function relRow(relation, other, dir) {
-    var col = isMuted(other) ? "#8a96ac" : colorFor(other.type);
-    var verb = relation || "reference";
-    var arrow = dir === "out" ? "&rarr;" : "&larr;";
+    var col = isMuted(other) ? "#9aa1ad" : colorFor(other.type);
     return '<div class="rel" data-id="' + escapeHtml(other.id) + '">' +
-      '<span class="r-dot" style="background:' + col + ';color:' + col + '"></span>' +
-      '<span class="r-verb">' + escapeHtml(verb) + '</span>' +
+      '<span class="r-dot" style="background:' + col + '"></span>' +
+      '<span class="r-verb">' + escapeHtml(relation || "reference") + '</span>' +
       '<span class="r-id">' + escapeHtml(other.id) + '</span>' +
-      '<span class="r-arrow">' + arrow + '</span>' +
-      '</div>';
+      '<span class="r-arrow">' + (dir === "out" ? "&rarr;" : "&larr;") + '</span></div>';
   }
-
-  function tempLabel(t) {
-    if (t > 0.6) return "hot";
-    if (t >= 0.15) return "warm";
-    return "cold";
-  }
+  function tempLabel(t) { return t > 0.6 ? "hot" : (t >= 0.15 ? "warm" : "cold"); }
   function chip(txt) { return '<span class="chip">' + escapeHtml(txt) + "</span>"; }
-
   pRels.addEventListener("click", function (e) {
     var row = e.target.closest ? e.target.closest(".rel") : null;
-    if (!row) return;
-    var target = nodeById[row.getAttribute("data-id")];
-    if (target) navigate(target);
+    if (row) { var t = nodeById[row.getAttribute("data-id")]; if (t) navigate(t); }
   });
+  document.getElementById("panel-close").addEventListener("click", function () { selectNode(null); });
 
-  document.getElementById("panel-close").addEventListener("click", function () {
-    selectNode(null);
-  });
-
-  // ----- Logic search (deterministic keyword finder, no model, no network) -----
+  // ----- Logic search (deterministic, no model, no network) -----
   var searchInput = document.getElementById("search-input");
   var searchClear = document.getElementById("search-clear");
   var resultsBox = document.getElementById("results");
-
-  function tokenize(q) {
-    return q.toLowerCase().split(/\s+/).filter(function (t) { return t.length > 0; });
-  }
-
+  function tokenize(q) { return q.toLowerCase().split(/\s+/).filter(function (t) { return t.length > 0; }); }
   function search(q) {
     var tokens = tokenize(q);
     if (tokens.length === 0) { resultsBox.classList.remove("open"); resultsBox.innerHTML = ""; return; }
-
     var scored = [];
     for (var a = 0; a < nodes.length; a++) {
-      var node = nodes[a];
-      var strong = 0, body = 0, present = 0;
+      var node = nodes[a], strong = 0, body = 0, present = 0;
       for (var t = 0; t < tokens.length; t++) {
-        var sCount = countOcc(node._strong, tokens[t]);
-        var fCount = countOcc(node._full, tokens[t]);
-        if (fCount > 0) present++;
-        strong += sCount;
-        body += (fCount - sCount);
+        var sC = countOcc(node._strong, tokens[t]), fC = countOcc(node._full, tokens[t]);
+        if (fC > 0) present++; strong += sC; body += (fC - sC);
       }
       if (strong + body === 0) continue;
-      var allBonus = (present === tokens.length) ? 25 : 0;
-      var score = strong * 6 + body * 1 + allBonus + node.deg * 0.15 + node.importance * 0.05;
+      var score = strong * 6 + body + (present === tokens.length ? 25 : 0) + node.deg * 0.15 + node.importance * 0.05;
       scored.push({ node: node, score: score });
     }
-
     scored.sort(function (x, y) { return y.score - x.score; });
-
     if (scored.length === 0) {
       resultsBox.innerHTML = '<div class="s-head">no matches for "' + escapeHtml(q) + '"</div>';
-      resultsBox.classList.add("open");
-      return;
+      resultsBox.classList.add("open"); return;
     }
-
     var top = scored.slice(0, 14);
     var html = '<div class="s-head">' + scored.length + ' match' + (scored.length === 1 ? "" : "es") + ' for "' + escapeHtml(q) + '"</div>';
     for (var r = 0; r < top.length; r++) {
-      var nd = top[r].node;
-      var col = isMuted(nd) ? "#8a96ac" : colorFor(nd.type);
-      html += '<div class="s-row" data-id="' + escapeHtml(nd.id) + '">' +
-        '<div class="s-top">' +
-          '<span class="s-dot" style="background:' + col + ';color:' + col + '"></span>' +
-          '<span class="s-id">' + escapeHtml(nd.id) + '</span>' +
-          '<span class="s-type">' + escapeHtml(nd.type) + '</span>' +
-        '</div>' +
-        '<div class="s-snip">' + snippet(nd, tokens) + '</div>' +
-      '</div>';
+      var nd = top[r].node, col = isMuted(nd) ? "#9aa1ad" : colorFor(nd.type);
+      html += '<div class="s-row" data-id="' + escapeHtml(nd.id) + '"><div class="s-top">' +
+        '<span class="s-dot" style="background:' + col + '"></span>' +
+        '<span class="s-id">' + escapeHtml(nd.id) + '</span>' +
+        '<span class="s-type">' + escapeHtml(nd.type) + '</span></div>' +
+        '<div class="s-snip">' + snippet(nd, tokens) + '</div></div>';
     }
-    resultsBox.innerHTML = html;
-    resultsBox.classList.add("open");
+    resultsBox.innerHTML = html; resultsBox.classList.add("open");
   }
-
   function snippet(node, tokens) {
-    // Prefer a window around the first token hit in the body, so the result
-    // reads like a pointer into the document. Fall back to the summary.
     var hayList = [node.text, node.summary];
     for (var h = 0; h < hayList.length; h++) {
-      var hay = hayList[h];
-      if (!hay) continue;
-      var low = hay.toLowerCase();
-      var best = -1;
-      for (var t = 0; t < tokens.length; t++) {
-        var idx = low.indexOf(tokens[t]);
-        if (idx >= 0 && (best < 0 || idx < best)) best = idx;
-      }
+      var hay = hayList[h]; if (!hay) continue;
+      var low = hay.toLowerCase(), best = -1;
+      for (var t = 0; t < tokens.length; t++) { var idx = low.indexOf(tokens[t]); if (idx >= 0 && (best < 0 || idx < best)) best = idx; }
       if (best >= 0) {
-        var start = Math.max(0, best - 55);
-        var end = Math.min(hay.length, best + 95);
+        var start = Math.max(0, best - 55), end = Math.min(hay.length, best + 95);
         var frag = (start > 0 ? "... " : "") + hay.slice(start, end).replace(/\s+/g, " ").trim() + (end < hay.length ? " ..." : "");
         return highlight(frag, tokens);
       }
     }
     return highlight((node.summary || node.id).replace(/\s+/g, " ").slice(0, 120), tokens);
   }
-
   function highlight(text, tokens) {
     var out = escapeHtml(text);
     for (var t = 0; t < tokens.length; t++) {
       if (!tokens[t]) continue;
-      var re = new RegExp("(" + escapeRegex(escapeHtml(tokens[t])) + ")", "gi");
-      out = out.replace(re, "<mark>$1</mark>");
+      out = out.replace(new RegExp("(" + escapeRegex(escapeHtml(tokens[t])) + ")", "gi"), "<mark>$1</mark>");
     }
     return out;
   }
-
   var searchTimer = null;
   searchInput.addEventListener("input", function () {
-    var v = searchInput.value;
-    searchClear.style.display = v ? "block" : "none";
+    var v = searchInput.value; searchClear.style.display = v ? "block" : "none";
     if (searchTimer) clearTimeout(searchTimer);
     searchTimer = setTimeout(function () { search(v); }, 90);
   });
   searchInput.addEventListener("keydown", function (e) {
     if (e.key === "Escape") { searchInput.value = ""; searchClear.style.display = "none"; search(""); searchInput.blur(); }
-    if (e.key === "Enter") {
-      var first = resultsBox.querySelector(".s-row");
-      if (first) { var nd = nodeById[first.getAttribute("data-id")]; if (nd) navigate(nd); }
-    }
+    if (e.key === "Enter") { var first = resultsBox.querySelector(".s-row"); if (first) { var nd = nodeById[first.getAttribute("data-id")]; if (nd) navigate(nd); } }
   });
-  searchClear.addEventListener("click", function () {
-    searchInput.value = "";
-    searchClear.style.display = "none";
-    search("");
-    searchInput.focus();
-  });
+  searchClear.addEventListener("click", function () { searchInput.value = ""; searchClear.style.display = "none"; search(""); searchInput.focus(); });
   resultsBox.addEventListener("click", function (e) {
     var row = e.target.closest ? e.target.closest(".s-row") : null;
-    if (!row) return;
-    var target = nodeById[row.getAttribute("data-id")];
-    if (target) navigate(target);
+    if (row) { var t = nodeById[row.getAttribute("data-id")]; if (t) navigate(t); }
   });
 })();
 </script>
