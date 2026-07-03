@@ -30,7 +30,7 @@ It is built on four ideas:
 4. **Memory that forgets.** An active consolidation pass called `dream` merges, compresses, supersedes and prunes. A brain that never forgets is useless.
 
 <p align="center">
-  <img src="assets/graph-preview.svg?v=3" alt="lastmemory memory graph" width="88%">
+  <img src="assets/graph.png" alt="lastmemory memory graph" width="100%">
 </p>
 
 <p align="center"><i>Nodes colored by type, sized by connections, dimmed by temperature. Orphans get a dashed outline. A built in keyword search points to where each thing is documented, and every node panel has clickable links to walk the network. Generated fully offline from your markdown, no model and no network.</i></p>
