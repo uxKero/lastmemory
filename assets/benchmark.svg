@@ -13,15 +13,15 @@
 
   <!-- lastmemory bar (blue, short) -->
   <text x="52" y="168" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#c3cee0">lastmemory on</text>
-  <rect x="52" y="180" width="97" height="34" rx="6" fill="#5fa8ff"/>
+  <rect x="52" y="180" width="97" height="34" rx="6" fill="#6ea8fe"/>
   <text x="163" y="203" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#e6ebf4">1,435 tokens</text>
 
   <!-- baseline bar (red, long) -->
   <text x="52" y="256" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#c3cee0">dump every file</text>
-  <rect x="52" y="268" width="722" height="34" rx="6" fill="#ff6b81"/>
+  <rect x="52" y="268" width="722" height="34" rx="6" fill="#ff7a8a"/>
   <text x="788" y="291" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#e6ebf4">10,713 tokens</text>
 
   <!-- headline number -->
-  <text x="52" y="360" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="30" font-weight="700" fill="#3fd6a8">86.6% fewer tokens</text>
+  <text x="52" y="360" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="30" font-weight="700" fill="#4fd1b0">86.6% fewer tokens</text>
   <text x="360" y="360" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#5a6478">exact via tiktoken, on the bundled example, versus dumping every file</text>
 </svg>
