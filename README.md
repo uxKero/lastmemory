@@ -1,13 +1,14 @@
 <p align="center">
-  <img src="assets/banner.svg?v=2" alt="lastmemory" width="100%">
+  <img src="assets/banner.svg?v=3" alt="lastmemory" width="100%">
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Claude_Code-skill-0a0a0b?logo=anthropic&logoColor=white" alt="Claude Code skill">
-  <img src="https://img.shields.io/badge/Python-scripts-0a0a0b?logo=python&logoColor=white" alt="Python">
-  <img src="https://img.shields.io/badge/Markdown-storage-0a0a0b?logo=markdown&logoColor=white" alt="Markdown storage">
-  <img src="https://img.shields.io/badge/License-MIT-0a0a0b?logo=opensourceinitiative&logoColor=white" alt="License MIT">
-  <img src="https://img.shields.io/badge/PRs-welcome-0a0a0b?logo=github&logoColor=white" alt="PRs welcome">
+  <img src="https://img.shields.io/badge/Claude_Code-skill-000000?style=for-the-badge&logo=anthropic&logoColor=white" alt="Claude Code skill">
+  <img src="https://img.shields.io/badge/Python-scripts-000000?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/Markdown-storage-000000?style=for-the-badge&logo=markdown&logoColor=white" alt="Markdown storage">
+  <img src="https://img.shields.io/badge/graph-offline-000000?style=for-the-badge" alt="Offline graph">
+  <img src="https://img.shields.io/badge/License-MIT-000000?style=for-the-badge" alt="License MIT">
+  <img src="https://img.shields.io/badge/PRs-welcome-000000?style=for-the-badge" alt="PRs welcome">
 </p>
 
 <p align="center">
@@ -29,7 +30,7 @@ It is built on four ideas:
 4. **Memory that forgets.** An active consolidation pass called `dream` merges, compresses, supersedes and prunes. A brain that never forgets is useless.
 
 <p align="center">
-  <img src="assets/graph-preview.svg?v=2" alt="lastmemory memory graph" width="88%">
+  <img src="assets/graph-preview.svg?v=3" alt="lastmemory memory graph" width="88%">
 </p>
 
 <p align="center"><i>Nodes colored by type, sized by connections, dimmed by temperature. Orphans get a dashed outline. A built in keyword search points to where each thing is documented, and every node panel has clickable links to walk the network. Generated fully offline from your markdown, no model and no network.</i></p>
@@ -74,7 +75,7 @@ It is built on four ideas:
 The point of `lastmemory` is to recall a whole project for a fraction of the context. `/lastmemory benchmark` runs a reproducible measurement on the bundled example project and writes the results to `benchmark/results/`.
 
 <p align="center">
-  <img src="assets/benchmark.svg?v=2" alt="lastmemory token benchmark" width="82%">
+  <img src="assets/benchmark.svg?v=3" alt="lastmemory token benchmark" width="82%">
 </p>
 
 On the bundled example project (a memory of 19 neurons across 5 zones), catching up with `/lastmemory on` costs **1,435 tokens** versus **10,713** to dump every memory file, an **86.6% saving**. Counts are exact, produced with the tiktoken tokenizer. Lower is better.
@@ -98,11 +99,11 @@ The mechanisms are borrowed openly from the current state of the art and adapted
 ## About
 
 <p align="left">
-  <img src="https://img.shields.io/badge/agent_memory-0a0a0b" alt="agent memory">
-  <img src="https://img.shields.io/badge/knowledge_graph-0a0a0b" alt="knowledge graph">
-  <img src="https://img.shields.io/badge/second_brain-0a0a0b" alt="second brain">
-  <img src="https://img.shields.io/badge/context_engineering-0a0a0b" alt="context engineering">
-  <img src="https://img.shields.io/badge/made_for-Claude_Code-0a0a0b?logo=anthropic&logoColor=white" alt="made for Claude Code">
+  <img src="https://img.shields.io/badge/agent_memory-000000?style=for-the-badge" alt="agent memory">
+  <img src="https://img.shields.io/badge/knowledge_graph-000000?style=for-the-badge" alt="knowledge graph">
+  <img src="https://img.shields.io/badge/second_brain-000000?style=for-the-badge" alt="second brain">
+  <img src="https://img.shields.io/badge/context_engineering-000000?style=for-the-badge" alt="context engineering">
+  <img src="https://img.shields.io/badge/made_for-Claude_Code-000000?style=for-the-badge&logo=anthropic&logoColor=white" alt="made for Claude Code">
 </p>
 
 `lastmemory` is an open project. It fills a gap that neither opaque vector memory servers nor personal Obsidian second brains cover: engineering memory for a code repo, as an editable markdown graph, with an offline visualization and active forgetting. If you build agents or care about how they remember, contributions are welcome.
