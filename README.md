@@ -3,12 +3,12 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Claude%20Code-skill-D97757?logo=anthropic&logoColor=white" alt="Claude Code skill">
-  <img src="https://img.shields.io/badge/License-MIT-22c55e.svg" alt="License MIT">
-  <img src="https://img.shields.io/badge/storage-plain%20markdown-3b82f6" alt="Plain markdown">
-  <img src="https://img.shields.io/badge/graph-offline%2C%20no%20CDN-a855f7" alt="Offline graph">
-  <img src="https://img.shields.io/badge/memory-that%20forgets-eab308" alt="Active forgetting">
-  <img src="https://img.shields.io/badge/PRs-welcome-f59e0b" alt="PRs welcome">
+  <img src="https://img.shields.io/badge/Claude_Code-skill-000000?style=for-the-badge&logo=anthropic&logoColor=white" alt="Claude Code skill">
+  <img src="https://img.shields.io/badge/Python-scripts-000000?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/Markdown-storage-000000?style=for-the-badge&logo=markdown&logoColor=white" alt="Markdown storage">
+  <img src="https://img.shields.io/badge/graph-offline-000000?style=for-the-badge" alt="Offline graph">
+  <img src="https://img.shields.io/badge/License-MIT-000000?style=for-the-badge" alt="License MIT">
+  <img src="https://img.shields.io/badge/PRs-welcome-000000?style=for-the-badge" alt="PRs welcome">
 </p>
 
 <p align="center">
@@ -99,11 +99,11 @@ The mechanisms are borrowed openly from the current state of the art and adapted
 ## About
 
 <p align="left">
-  <img src="https://img.shields.io/badge/topic-agent%20memory-3b82f6" alt="agent memory">
-  <img src="https://img.shields.io/badge/topic-knowledge%20graph-22c55e" alt="knowledge graph">
-  <img src="https://img.shields.io/badge/topic-second%20brain-a855f7" alt="second brain">
-  <img src="https://img.shields.io/badge/topic-context%20engineering-eab308" alt="context engineering">
-  <img src="https://img.shields.io/badge/made%20for-Claude%20Code-D97757?logo=anthropic&logoColor=white" alt="made for Claude Code">
+  <img src="https://img.shields.io/badge/agent_memory-000000?style=for-the-badge" alt="agent memory">
+  <img src="https://img.shields.io/badge/knowledge_graph-000000?style=for-the-badge" alt="knowledge graph">
+  <img src="https://img.shields.io/badge/second_brain-000000?style=for-the-badge" alt="second brain">
+  <img src="https://img.shields.io/badge/context_engineering-000000?style=for-the-badge" alt="context engineering">
+  <img src="https://img.shields.io/badge/made_for-Claude_Code-000000?style=for-the-badge&logo=anthropic&logoColor=white" alt="made for Claude Code">
 </p>
 
 `lastmemory` is an open project. It fills a gap that neither opaque vector memory servers nor personal Obsidian second brains cover: engineering memory for a code repo, as an editable markdown graph, with an offline visualization and active forgetting. If you build agents or care about how they remember, contributions are welcome.
