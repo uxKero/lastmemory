@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="640" viewBox="0 0 1100 640" role="img" aria-label="lastmemory memory graph preview">
+  <defs>
+    <linearGradient id="pbg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b0e14"/>
+      <stop offset="1" stop-color="#0e1420"/>
+    </linearGradient>
+    <filter id="pglow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+  </defs>
+
+  <rect width="1100" height="640" fill="url(#pbg)"/>
+  <text x="28" y="42" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="18" fill="#7f8ea8">lastmemory  ::  memory graph</text>
+
+  <!-- logic search box (deterministic, no model, no network) -->
+  <g font-family="'Segoe UI', Helvetica, Arial, sans-serif">
+    <rect x="28" y="60" width="300" height="34" rx="9" fill="#0f131c" stroke="#5fa8ff"/>
+    <text x="44" y="82" font-size="13" fill="#5a6478">find</text>
+    <text x="78" y="82" font-size="13" fill="#e6ebf4">safari otp</text>
+    <rect x="28" y="100" width="300" height="128" rx="9" fill="#0f131c" fill-opacity="0.94" stroke="#232c3d"/>
+    <text x="44" y="121" font-size="10.5" fill="#5a6478" letter-spacing="0.6">5 MATCHES FOR "SAFARI OTP"</text>
+    <g>
+      <circle cx="46" cy="140" r="5" fill="#c58bff"/>
+      <text x="60" y="144" font-size="12" fill="#e6ebf4">dec-0004</text>
+      <text x="290" y="144" font-size="9.5" fill="#5a6478">DECISION</text>
+      <text x="44" y="159" font-size="11" fill="#8a96ac">... chose <tspan fill="#ffe6ad">OTP</tspan> email fallback because Google ...</text>
+    </g>
+    <g>
+      <circle cx="46" cy="180" r="5" fill="#3fd6a8"/>
+      <text x="60" y="184" font-size="12" fill="#e6ebf4">zone-auth</text>
+      <text x="298" y="184" font-size="9.5" fill="#5a6478">ZONE</text>
+      <text x="44" y="199" font-size="11" fill="#8a96ac">... <tspan fill="#ffe6ad">Safari</tspan> iOS breaks Google Sign In ...</text>
+    </g>
+    <g>
+      <circle cx="46" cy="215" r="5" fill="#ffca5f"/>
+      <text x="60" y="219" font-size="12" fill="#e6ebf4">refl-safari-ios-auth</text>
+    </g>
+  </g>
+
+  <!-- edges -->
+  <g stroke="#2a3350" stroke-width="1.6" opacity="0.7">
+    <line x1="360" y1="300" x2="230" y2="180"/>
+    <line x1="360" y1="300" x2="250" y2="420"/>
+    <line x1="360" y1="300" x2="520" y2="230"/>
+    <line x1="360" y1="300" x2="500" y2="400"/>
+    <line x1="520" y1="230" x2="640" y2="150"/>
+    <line x1="520" y1="230" x2="660" y2="300"/>
+    <line x1="500" y1="400" x2="640" y2="470"/>
+    <line x1="660" y1="300" x2="640" y2="150"/>
+    <line x1="640" y1="470" x2="660" y2="300"/>
+    <line x1="230" y1="180" x2="250" y2="420"/>
+  </g>
+
+  <!-- nodes: session blue, zone green, decision purple, scar red, reflection gold -->
+  <g filter="url(#pglow)">
+    <circle cx="360" cy="300" r="30" fill="#22c55e"/>            <!-- zone auth, hot, big -->
+    <circle cx="520" cy="230" r="20" fill="#a855f7"/>            <!-- decision -->
+    <circle cx="500" cy="400" r="18" fill="#a855f7"/>
+    <circle cx="230" cy="180" r="16" fill="#3b82f6"/>            <!-- session -->
+    <circle cx="250" cy="420" r="15" fill="#3b82f6"/>
+    <circle cx="640" cy="150" r="15" fill="#ef4444"/>            <!-- scar -->
+    <circle cx="660" cy="300" r="17" fill="#eab308"/>           <!-- reflection -->
+  </g>
+  <!-- cold / superseded muted -->
+  <circle cx="640" cy="470" r="16" fill="#3a4358" opacity="0.75"/>
+  <!-- orphan, dashed outline -->
+  <circle cx="900" cy="200" r="14" fill="#22c55e" opacity="0.35"/>
+  <circle cx="900" cy="200" r="19" fill="none" stroke="#22c55e" stroke-width="1.6" stroke-dasharray="4 4"/>
+  <text x="900" y="238" text-anchor="middle" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" fill="#5f6d86">orphan</text>
+
+  <!-- labels -->
+  <g font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#aebbd2">
+    <text x="360" y="348" text-anchor="middle">zones/auth</text>
+    <text x="520" y="204" text-anchor="middle">dec-0003</text>
+    <text x="660" y="330" text-anchor="middle">reflection</text>
+    <text x="640" y="128" text-anchor="middle" fill="#e88">scar</text>
+    <text x="640" y="500" text-anchor="middle" fill="#67728a">payments (cold)</text>
+  </g>
+
+  <!-- legend -->
+  <g font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="13">
+    <rect x="28" y="520" width="300" height="96" rx="10" fill="#121a2a" stroke="#243050"/>
+    <circle cx="48" cy="546" r="6" fill="#3b82f6"/><text x="62" y="550" fill="#c3cee0">session</text>
+    <circle cx="148" cy="546" r="6" fill="#22c55e"/><text x="162" y="550" fill="#c3cee0">zone</text>
+    <circle cx="238" cy="546" r="6" fill="#a855f7"/><text x="252" y="550" fill="#c3cee0">decision</text>
+    <circle cx="48" cy="574" r="6" fill="#ef4444"/><text x="62" y="578" fill="#c3cee0">scar</text>
+    <circle cx="148" cy="574" r="6" fill="#eab308"/><text x="162" y="578" fill="#c3cee0">reflection</text>
+    <text x="48" y="602" fill="#6b7a96">size = connections   .   brightness = temperature</text>
+  </g>
+
+  <!-- side panel -->
+  <g>
+    <rect x="770" y="330" width="300" height="286" rx="10" fill="#121a2a" stroke="#243050"/>
+    <text x="790" y="362" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#8fa0bd">zones/auth</text>
+    <text x="790" y="384" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#22c55e">zone   .   hot   .   importance 8</text>
+    <line x1="790" y1="398" x2="1050" y2="398" stroke="#243050"/>
+    <text x="790" y="426" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" fill="#aebbd2">
+      <tspan x="790" dy="0">Auth and sessions. Supabase auth with</tspan>
+      <tspan x="790" dy="20">OTP email fallback because Google Sign In</tspan>
+      <tspan x="790" dy="20">fails on Safari iOS. Watch out: RLS</tspan>
+      <tspan x="790" dy="20">recursion on the profiles policy.</tspan>
+    </text>
+    <text x="790" y="540" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" fill="#67728a">
+      <tspan x="790" dy="0">governed_by  dec-0003</tspan>
+      <tspan x="790" dy="18">warns  scar-supabase-rls-recursion</tspan>
+    </text>
+  </g>
+</svg>

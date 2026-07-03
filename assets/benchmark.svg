@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="420" viewBox="0 0 1000 420" role="img" aria-label="lastmemory token benchmark">
+  <defs>
+    <linearGradient id="bbg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b0e14"/>
+      <stop offset="1" stop-color="#0f131c"/>
+    </linearGradient>
+  </defs>
+  <rect width="1000" height="420" fill="url(#bbg)"/>
+  <rect x="24" y="24" width="952" height="372" rx="14" fill="#151b28" stroke="#232c3d"/>
+
+  <text x="52" y="74" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="22" font-weight="700" fill="#e6ebf4">Tokens to get up to speed on a project</text>
+  <text x="52" y="100" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#8a96ac">lower is better</text>
+
+  <!-- lastmemory bar (blue, short) -->
+  <text x="52" y="168" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#c3cee0">lastmemory on</text>
+  <rect x="52" y="180" width="97" height="34" rx="6" fill="#5fa8ff"/>
+  <text x="163" y="203" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#e6ebf4">1,435 tokens</text>
+
+  <!-- baseline bar (red, long) -->
+  <text x="52" y="256" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#c3cee0">dump every file</text>
+  <rect x="52" y="268" width="722" height="34" rx="6" fill="#ff6b81"/>
+  <text x="788" y="291" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#e6ebf4">10,713 tokens</text>
+
+  <!-- headline number -->
+  <text x="52" y="360" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="30" font-weight="700" fill="#3fd6a8">86.6% fewer tokens</text>
+  <text x="360" y="360" font-family="'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#5a6478">exact via tiktoken, on the bundled example, versus dumping every file</text>
+</svg>

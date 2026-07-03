@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Internal design doc, not part of the published skill
+lastmemory-plan.md
+
+# Local, unpublished helper notes (image prompts, scratch)
+notes-local/
+
+# Generated graph output in the example (regenerate with generate_graph.py)
+example/memory/graph.html
+example/memory/graph.json
